@@ -119,7 +119,7 @@ public final class ShenyuClientRegisterGrpcServiceImplTest {
         assertEquals(orderdResult(expected), orderdResult(actual));
         List<GrpcUpstream> resultList = GsonUtils.getInstance().fromCurrentList(actual, GrpcUpstream.class);
         assertEquals(resultList.size(), 2);
- 
+    
         //list.clear();
         list.add(URIRegisterDTO.builder().appName("test1").rpcType(RpcTypeEnum.GRPC.getName()).host("localhost").port(8092).build());
         selectorDO = mock(SelectorDO.class);
@@ -183,9 +183,9 @@ public final class ShenyuClientRegisterGrpcServiceImplTest {
         for (String str: splitStr) {
             String newStr = str.replaceAll("[\\}\\{\\[\\]]", "");
             if (newStr.length() > 3) {
-                String[] small = str.split(",");
+                String[] small = newStr.split(",");
                 for (String str2:small) {
-                    if (str.length() > 3) {
+                    if (str2.length() > 3) {
                         list.add(str2);
                     }                  
                 }
@@ -198,5 +198,4 @@ public final class ShenyuClientRegisterGrpcServiceImplTest {
         return out;
         
     }
-
 }
