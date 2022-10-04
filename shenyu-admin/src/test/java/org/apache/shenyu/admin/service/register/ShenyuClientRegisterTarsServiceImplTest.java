@@ -42,6 +42,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Comparator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -113,7 +114,8 @@ public final class ShenyuClientRegisterTarsServiceImplTest {
         when(selectorDO.getHandle()).thenReturn(returnStr);
         doReturn(false).when(shenyuClientRegisterTarsService).doSubmit(any(), any());
         String actual = shenyuClientRegisterTarsService.buildHandle(list, selectorDO);
-        assertEquals(actual.replaceAll("\\d{13}", "0"), expected.replaceAll("\\d{13}", "0"));
+        //assertEquals(actual.replaceAll("\\d{13}", "0"), expected.replaceAll("\\d{13}", "0"));
+        assertEquals(orderdResult(expected.replaceAll("\\d{13}", "0")), orderdResult(actual.replaceAll("\\d{13}", "0")));
         List<TarsUpstream> resultList = GsonUtils.getInstance().fromCurrentList(actual, TarsUpstream.class);
         assertEquals(resultList.size(), 2);
         assertEquals(resultList.stream().filter(r -> list.stream().map(dto -> CommonUpstreamUtils.buildUrl(dto.getHost(), dto.getPort()))
@@ -165,5 +167,28 @@ public final class ShenyuClientRegisterTarsServiceImplTest {
         } catch (Exception e) {
             throw new ShenyuException(e.getCause());
         }
+    }
+    
+    private String orderdResult(final String result) {
+        ArrayList<String> list = new ArrayList<String>();
+        String[] splitStr = result.split("}");
+        String out = "";
+        for (String str: splitStr) {
+            String newStr = str.replaceAll("[\\}\\{\\[\\]]", "");
+            if (newStr.length() > 3) {
+                String[] small = newStr.split(",");
+                for (String str2:small) {
+                    if (str2.length() > 3) {
+                        list.add(str2);
+                    }                  
+                }
+            }
+            list.sort(Comparator.naturalOrder());
+            out += list.toString();
+            list.clear();
+            
+        }
+        return out;
+        
     }
 }
