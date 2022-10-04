@@ -34,7 +34,8 @@ import org.mockito.quality.Strictness;
     
 import java.util.ArrayList;
 import java.util.List;
-    
+import java.util.Comparator;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -67,8 +68,10 @@ public final class ShenyuClientRegisterSofaServiceImplTest {
     
     @Test
     public void testRuleHandler() {
-        assertEquals("{\"retries\":0,\"loadBalance\":\"random\",\"timeout\":3000}",
-                shenyuClientRegisterSofaService.ruleHandler());
+        assertEquals(orderdResult("{\"retries\":0,\"loadBalance\":\"random\",\"timeout\":3000}"),
+            orderdResult(shenyuClientRegisterSofaService.ruleHandler()));
+        //assertEquals("{\"retries\":0,\"loadBalance\":\"random\",\"timeout\":3000}",
+                //shenyuClientRegisterSofaService.ruleHandler());
     }
     
     @Test
@@ -86,5 +89,20 @@ public final class ShenyuClientRegisterSofaServiceImplTest {
         list.add(URIRegisterDTO.builder().build());
         assertEquals(StringUtils.EMPTY,
                 shenyuClientRegisterSofaService.buildHandle(list, SelectorDO.builder().build()));
+    }
+
+    private String orderdResult(final String result) {
+        ArrayList<String> list = new ArrayList<String>();
+        String[] splitStr = result.split(",");
+        String out = "";
+        for (String str2:splitStr) {
+            if (str2.length() > 3) {
+                list.add(str2.replaceAll("[\\}\\{\\[\\]]", ""));
+            }                  
+        }
+        list.sort(Comparator.naturalOrder());
+        out += list.toString();
+        list.clear();        
+        return out;       
     }
 }
