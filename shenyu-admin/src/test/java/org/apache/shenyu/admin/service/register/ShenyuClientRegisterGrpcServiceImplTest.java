@@ -40,11 +40,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.test.util.ReflectionTestUtils;
+import com.google.gson.JsonParser;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Comparator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -105,9 +105,9 @@ public final class ShenyuClientRegisterGrpcServiceImplTest {
         
         final String returnStr = "[{upstreamUrl='localhost:8090',weight=1,status=true,timestamp=1637826588267},"
                 + "{upstreamUrl='localhost:8091',weight=2,status=true,timestamp=1637826588267}]";
-        final String expected = "[{\"weight\":1,\"status\":true,\"timestamp\":1637826588267,\"upstreamUrl\":\"localhost:8090\"},"
-                + "{\"weight\":2,\"status\":true,\"timestamp\":1637826588267,\"upstreamUrl\":\"localhost:8091\"}]";
-
+        final String expected = "[{\"weight\":1,\"upstreamUrl\":\"localhost:8090\",\"status\":true,\"timestamp\":1637826588267},"
+                + "{\"weight\":2,\"upstreamUrl\":\"localhost:8091\",\"status\":true,\"timestamp\":1637826588267}]";
+    
         List<URIRegisterDTO> list = new ArrayList<>();
         list.add(URIRegisterDTO.builder().appName("test1").rpcType(RpcTypeEnum.GRPC.getName()).host("localhost").port(8090).build());
         list.add(URIRegisterDTO.builder().appName("test2").rpcType(RpcTypeEnum.GRPC.getName()).host("localhost").port(8091).build());
@@ -115,8 +115,9 @@ public final class ShenyuClientRegisterGrpcServiceImplTest {
         when(selectorDO.getHandle()).thenReturn(returnStr);
         doReturn(false).when(shenyuClientRegisterGrpcService).doSubmit(any(), any());
         String actual = shenyuClientRegisterGrpcService.buildHandle(list, selectorDO);
-        //assertEquals(expected, actual);
-        assertEquals(orderdResult(expected), orderdResult(actual));
+        JsonParser parser = new JsonParser();
+        assertEquals(parser.parse(actual), parser.parse(expected));
+        //assertEquals(actual, expected);
         List<GrpcUpstream> resultList = GsonUtils.getInstance().fromCurrentList(actual, GrpcUpstream.class);
         assertEquals(resultList.size(), 2);
     
@@ -176,26 +177,4 @@ public final class ShenyuClientRegisterGrpcServiceImplTest {
         }
     }
 
-    private String orderdResult(final String result) {
-        ArrayList<String> list = new ArrayList<String>();
-        String[] splitStr = result.split("}");
-        String out = "";
-        for (String str: splitStr) {
-            String newStr = str.replaceAll("[\\}\\{\\[\\]]", "");
-            if (newStr.length() > 3) {
-                String[] small = newStr.split(",");
-                for (String str2:small) {
-                    if (str2.length() > 3) {
-                        list.add(str2);
-                    }                  
-                }
-            }
-            list.sort(Comparator.naturalOrder());
-            out += list.toString();
-            list.clear();
-            
-        }
-        return out;
-        
-    }
 }
