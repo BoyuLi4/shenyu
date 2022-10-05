@@ -185,5 +185,5 @@ public final class ShenyuClientRegisterDivideServiceImplTest {
         } catch (Exception e) {
             throw new ShenyuException(e.getCause());
         }
-    }   
+    }
 }
