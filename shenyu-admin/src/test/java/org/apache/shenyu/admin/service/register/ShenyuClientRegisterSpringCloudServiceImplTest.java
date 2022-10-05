@@ -119,7 +119,7 @@ public final class ShenyuClientRegisterSpringCloudServiceImplTest {
         when(selectorDO.getHandle()).thenReturn(returnStr);
         String actual = shenyuClientRegisterSpringCloudService.buildHandle(list, selectorDO);
         JsonParser parser = new JsonParser();
-        assertEquals(parser.parse(actual.replaceAll("\\d{13}", "0")), parser.parse(expected.replaceAll("\\d{13}", "0")));
+        assertEquals(parser.parse(expected.replaceAll("\\d{13}", "0")), parser.parse(actual.replaceAll("\\d{13}", "0")));
         SpringCloudSelectorHandle handle = GsonUtils.getInstance().fromJson(actual, SpringCloudSelectorHandle.class);
         assertEquals(handle.getDivideUpstreams().size(), 2);
         assertEquals(handle.getDivideUpstreams().stream().filter(r -> list.stream().map(dto -> CommonUpstreamUtils.buildUrl(dto.getHost(), dto.getPort()))
