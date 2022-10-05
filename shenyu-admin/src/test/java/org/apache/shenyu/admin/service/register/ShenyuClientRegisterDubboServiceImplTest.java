@@ -40,11 +40,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.test.util.ReflectionTestUtils;
+import com.google.gson.JsonParser;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Comparator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -109,14 +109,16 @@ public final class ShenyuClientRegisterDubboServiceImplTest {
         final String expected = "[{\"port\":0,\"weight\":50,\"warmup\":10,\"protocol\":\"dubbo://\",\"upstreamHost\":\"localhost\",\"upstreamUrl\":\"localhost:8090\","
                 + "\"status\":true,\"timestamp\":1637826588267},{\"port\":0,\"weight\":50,\"warmup\":10,\"protocol\":\"dubbo://\",\"upstreamHost\":\"localhost\","
                 + "\"upstreamUrl\":\"localhost:8091\",\"status\":false,\"timestamp\":1637826588267}]";
+        
         List<URIRegisterDTO> list = new ArrayList<>();
         list.add(URIRegisterDTO.builder().appName("test1").rpcType(RpcTypeEnum.DUBBO.getName()).host(LOCALHOST).port(8090).build());
         SelectorDO selectorDO = mock(SelectorDO.class);
         when(selectorDO.getHandle()).thenReturn(returnStr);
         doReturn(false).when(shenyuClientRegisterDubboService).doSubmit(any(), any());
         String actual = shenyuClientRegisterDubboService.buildHandle(list, selectorDO);
-        assertEquals(orderdResult(expected.replaceAll("\\d{13}", "0")), orderdResult(actual.replaceAll("\\d{13}", "0")));
         //assertEquals(expected.replaceAll("\\d{13}", "0"), actual.replaceAll("\\d{13}", "0"));
+        JsonParser parser = new JsonParser();
+        assertEquals(parser.parse(actual.replaceAll("\\d{13}", "0")), parser.parse(expected.replaceAll("\\d{13}", "0")));
         List<DubboUpstream> resultList = GsonUtils.getInstance().fromCurrentList(actual, DubboUpstream.class);
         assertEquals(resultList.size(), 2);
 
@@ -180,28 +182,5 @@ public final class ShenyuClientRegisterDubboServiceImplTest {
         } catch (Exception e) {
             throw new ShenyuException(e.getCause());
         }
-    }
-
-    private String orderdResult(final String result) {
-        ArrayList<String> list = new ArrayList<String>();
-        String[] splitStr = result.split("}");
-        String out = "";
-        for (String str: splitStr) {
-            String newStr = str.replaceAll("[\\}\\{\\[\\]]", "");
-            if (newStr.length() > 3) {
-                String[] small = newStr.split(",");
-                for (String str2:small) {
-                    if (str2.length() > 3) {
-                        list.add(str2);
-                    }                  
-                }
-            }
-            list.sort(Comparator.naturalOrder());
-            out += list.toString();
-            list.clear();
-            
-        }
-        return out;
-        
     }
 }
