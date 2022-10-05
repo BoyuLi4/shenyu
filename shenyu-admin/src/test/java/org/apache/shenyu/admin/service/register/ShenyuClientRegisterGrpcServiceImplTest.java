@@ -117,7 +117,6 @@ public final class ShenyuClientRegisterGrpcServiceImplTest {
         String actual = shenyuClientRegisterGrpcService.buildHandle(list, selectorDO);
         JsonParser parser = new JsonParser();
         assertEquals(parser.parse(actual), parser.parse(expected));
-        //assertEquals(actual, expected);
         List<GrpcUpstream> resultList = GsonUtils.getInstance().fromCurrentList(actual, GrpcUpstream.class);
         assertEquals(resultList.size(), 2);
     
@@ -176,5 +175,4 @@ public final class ShenyuClientRegisterGrpcServiceImplTest {
             throw new ShenyuException(e.getCause());
         }
     }
-
 }
