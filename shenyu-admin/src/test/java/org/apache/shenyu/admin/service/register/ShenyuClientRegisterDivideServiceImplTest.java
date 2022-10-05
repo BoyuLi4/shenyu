@@ -117,7 +117,6 @@ public final class ShenyuClientRegisterDivideServiceImplTest {
         when(selectorDO.getHandle()).thenReturn(returnStr);
         doReturn(false).when(shenyuClientRegisterDivideService).doSubmit(any(), any());
         String actual = shenyuClientRegisterDivideService.buildHandle(list, selectorDO);
-        //assertEquals(expected.replaceAll("\\d{13}", "0"), actual.replaceAll("\\d{13}", "0"));
         JsonParser parser = new JsonParser();
         assertEquals(parser.parse(actual.replaceAll("\\d{13}", "0")), parser.parse(expected.replaceAll("\\d{13}", "0")));
         List<DivideUpstream> resultList = GsonUtils.getInstance().fromCurrentList(actual, DivideUpstream.class);
