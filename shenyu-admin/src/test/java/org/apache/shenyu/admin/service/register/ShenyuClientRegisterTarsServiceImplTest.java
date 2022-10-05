@@ -114,7 +114,6 @@ public final class ShenyuClientRegisterTarsServiceImplTest {
         when(selectorDO.getHandle()).thenReturn(returnStr);
         doReturn(false).when(shenyuClientRegisterTarsService).doSubmit(any(), any());
         String actual = shenyuClientRegisterTarsService.buildHandle(list, selectorDO);
-        //assertEquals(actual.replaceAll("\\d{13}", "0"), expected.replaceAll("\\d{13}", "0"));
         JsonParser parser = new JsonParser();
         assertEquals(parser.parse(actual.replaceAll("\\d{13}", "0")), parser.parse(expected.replaceAll("\\d{13}", "0")));
         List<TarsUpstream> resultList = GsonUtils.getInstance().fromCurrentList(actual, TarsUpstream.class);
