@@ -116,7 +116,6 @@ public final class ShenyuClientRegisterDubboServiceImplTest {
         when(selectorDO.getHandle()).thenReturn(returnStr);
         doReturn(false).when(shenyuClientRegisterDubboService).doSubmit(any(), any());
         String actual = shenyuClientRegisterDubboService.buildHandle(list, selectorDO);
-        //assertEquals(expected.replaceAll("\\d{13}", "0"), actual.replaceAll("\\d{13}", "0"));
         JsonParser parser = new JsonParser();
         assertEquals(parser.parse(actual.replaceAll("\\d{13}", "0")), parser.parse(expected.replaceAll("\\d{13}", "0")));
         List<DubboUpstream> resultList = GsonUtils.getInstance().fromCurrentList(actual, DubboUpstream.class);
